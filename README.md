@@ -22,21 +22,25 @@ Step 1
 Create Repo `"k8s-Connection"` on GitLab 
 
 Create Agent on GitLab
+
 Search in google: integrate kubernetes cluster with gitlab (https://docs.gitlab.com/ee/user/clusters/agent/) 
 To connect a Kubernetes cluster to GitLab, you must first install an agent in your cluster. (https://docs.gitlab.com/ee/user/clusters/agent/install/index.html)
 
-* In the repository, in the default branch, create an agent configuration file at: .gitlab/agents/<agent-name>/config.yaml 
+* In the repository, in the default branch, create an agent configuration file at: 
+
+`.gitlab/agents/<agent-name>/config.yaml`
+
 (This file we'll define witch group,username and repository cam acess the kubernetes cluster )
 
-.gitlab/agents/`k8s-Connection`/config.yaml
+`.gitlab/agents/k8s-Connection/config.yaml`
 
 add in file this code
 ```yml
-    ci_access:
-        groups:
-        - id: dev-ops-group3
-        projects:
-        - id: dev-ops-group3/k8s-data
+ci_access:
+    groups:
+    - id: dev-ops-group3
+    projects:
+    - id: dev-ops-group3/k8s-data
 ```
         
 Install GitLab Agent on K8S Cluster
@@ -46,34 +50,37 @@ Access GitLab:
 
 Enable the GitLab Agent:
 
-Go to Operate > Kubernetes Clusters.
-Select Connect a Cluster (Agent).
-Click on Install a new agent.
-Generate an Agent Configuration file. This will be used later in your Kubernetes cluster.
+- Go to Operate > Kubernetes Clusters.
+- Select Connect a Cluster (Agent).
+- Click on Install a new agent.
 
-    * in gitlad repository , go to Operate > Kubernetes clusters.
-    * Agent Access Token : <your-token>
-    * Helm Script :
-    ```bash
-        helm repo add gitlab https://charts.gitlab.io
-        helm repo update
-        helm upgrade --install k8s-Connection gitlab/gitlab-agent \
-            --namespace gitlab-agent-k8s-Connection \
-            --create-namespace \
-            --set config.token=<your-token> \
-            --set config.kasAddress=wss://kas.gitlab.com
-    ```
+Generate an Agent Configuration file. 
+
+This will be used later in your Kubernetes cluster.
+
+* in gitlad repository , go to Operate > Kubernetes clusters.
+* Agent Access Token : <YOUR-TOKEN>
+* Helm Script :
+```bash
+helm repo add gitlab https://charts.gitlab.io
+helm repo update
+helm upgrade --install k8s-Connection gitlab/gitlab-agent \
+    --namespace gitlab-agent-k8s-Connection \
+    --create-namespace \
+    --set config.token=<YOUR-TOKEN> \
+    --set config.kasAddress=wss://kas.gitlab.com
+```
 
 Register Connection between K8S and GitLab
 Exec all commands in terminal 
 ```bash
-    helm repo add gitlab https://charts.gitlab.io
-    helm repo update
-    helm upgrade --install k8s-Connection gitlab/gitlab-agent \
-        --namespace gitlab-agent-k8s-Connection \
-        --create-namespace \
-        --set config.token=<your-token> \
-        --set config.kasAddress=wss://kas.gitlab.com
+helm repo add gitlab https://charts.gitlab.io
+helm repo update
+helm upgrade --install k8s-Connection gitlab/gitlab-agent \
+    --namespace gitlab-agent-k8s-Connection \
+    --create-namespace \
+    --set config.token=<YOUR-TOKEN> \
+    --set config.kasAddress=wss://kas.gitlab.com
 ```
 
 Step 2
@@ -81,8 +88,11 @@ Step 2
 Create Repo `"k8s-data"` on GitLab
 
 Create K8S Manifests for our project
+
 1- Create file .gitlab-ci.yml
+
 2- For config this new file Search in google: gitlab container registry cicd (https://docs.gitlab.com/ee/user/packages/container_registry/build_and_push_images.html)
+
 3- Implement Build Image
 
 ```yaml
@@ -127,19 +137,19 @@ vim pod.yaml
     
 ```yaml
 
-    apiVersion: v1
-    kind: Pod
-    metadata:
-        labels:
-        run: login-app
-        name: login-app
-    spec:
-        containers:
-        - image: registry.gitlab.com/dev-ops-group3/k8s-data/sample:v1
-        name: login-app
-        restartPolicy: Always
-        imagePullSecrets:
-        - name: app-secret
+apiVersion: v1
+kind: Pod
+metadata:
+    labels:
+    run: login-app
+    name: login-app
+spec:
+    containers:
+    - image: registry.gitlab.com/dev-ops-group3/k8s-data/sample:v1
+    name: login-app
+    restartPolicy: Always
+    imagePullSecrets:
+    - name: app-secret
 
 ```
 b) Server Manifest 
