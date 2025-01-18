@@ -10,11 +10,13 @@ Step 1
 
 Step 2
 - Create K8S Manifests for our project
-- Push Project’s Data on Repo `"k8s-Connection"`
 - Create image and push it to GitLab Container Registry
+- Push Project’s Data on Repo `"k8s-Connection"`
 Run final CI/CD
 
+**Flow of the Steps**
 
+![](/image/diagram-deploy-app-kubernetes.png)
 
 Step 1
 
@@ -25,7 +27,7 @@ Create Agent on GitLab
 Search in google: integrate kubernetes cluster with gitlab (https://docs.gitlab.com/ee/user/clusters/agent/) 
 To connect a Kubernetes cluster to GitLab, you must first install an agent in your cluster. (https://docs.gitlab.com/ee/user/clusters/agent/install/index.html)
 
-* In the repository, in the default branch, create an agent configuration file at: 
+* In the repository `"k8s-Connection"`, in the default branch, create an agent configuration file at: 
 
 `.gitlab/agents/<agent-name>/config.yaml`
 
@@ -52,6 +54,8 @@ Enable the GitLab Agent:
 - Go to Operate > Kubernetes Clusters.
 - Select Connect a Cluster (Agent).
 - Click on Install a new agent.
+
+![](/image/Install%20GitLab%20Agent%20on%20K8S%20Cluster.png)
 
 Generate an Agent Configuration file. 
 
@@ -84,13 +88,12 @@ helm upgrade --install k8s-Connection gitlab/gitlab-agent \
 
 Step 2
 
-Create Repo `"k8s-data"` on GitLab
-
 Create K8S Manifests for our project
 
-1- Create file .gitlab-ci.yml
+1- Create file `.gitlab-ci.yml` in `"k8s-data"` repository
 
 2- For config this new file Search in google: gitlab container registry cicd (https://docs.gitlab.com/ee/user/packages/container_registry/build_and_push_images.html)
+
 
 3- Implement Build Image
 
@@ -116,11 +119,14 @@ build_image:
 ```
 4- Create manifest file
 
-a) Pod Manifest 
+![](/image/schema-kubernets.png)
+
+a) **POD** Manifest 
 
 ```bash
 kubectl run login-app --image=registry.gitlab.com/dev-ops-group3/k8s-data/sample:v1 --dry-run=client -o yaml > pod.yaml
 ```
+`**This command will create a Manifest based on the parameters of the command kubectl**`
 
 ```bash 
 vim pod.yaml
@@ -151,11 +157,13 @@ spec:
     - name: app-secret
 
 ```
-b) Server Manifest 
+b) **SERVICE** Manifest 
 
 ```bash
 kubectl create svc nodeport login-svc --tcp=80:80 --dry-run=client -o yaml > loginsvc.yaml
 ```
+`**This command will create a Manifest based on the parameters of the command kubectl**`
+
 ```bash 
 vim loginsvc.yaml
 ```
@@ -185,7 +193,7 @@ spec:
     type: NodePort
 
 ```
-c) Add Create Secret Command (app-secret) in .gitlab-ci.yml 
+c) Add Create **SECRET** Command (app-secret) in .gitlab-ci.yml 
 
 ```yaml
 variables:
@@ -232,8 +240,22 @@ deploy_project:
 Push Project’s Data on Repo k8s-data
 
 1- Create folder [k8s-files] in files [pod.yaml,loginsvc.yaml]
+
 2- put de result of all (Create manifest file) in our respective item 
+
+```bash
+git add .
+git commit -m "Add all manifest files"
+git push
+```
 
 Create image and push it to GitLab Container Registry
 
+![](/image/build-image.png)
+
 Run final CI/CD
+
+![](/image/run-ci-cd.png)
+![](/image/run-ci-cd-2.png)
+![](/image/deploy-project.png)
+
