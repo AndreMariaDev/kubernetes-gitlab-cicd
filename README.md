@@ -3,13 +3,12 @@
 Step 1
 
 - Create Repo `"k8s-data"` on GitLab
+- Create Repo `"k8s-Connection"` on GitLab
 - Create Agent on GitLab
 - Install GitLab Agent on K8S Cluster
 - Register Connection between K8S and GitLab
 
 Step 2
-
-- Create Repo `"k8s-Connection"` on GitLab
 - Create K8S Manifests for our project
 - Push Project’s Data on Repo `"k8s-Connection"`
 - Create image and push it to GitLab Container Registry
