@@ -1,3 +1,137 @@
+## Manage GitLab repositories with Terraform
+
+**Flow of the Steps**
+
+Install Gitlab Server in Docker container
+
+Search for : Install Gitlab using Docker Engine
+Url result ? https://docs.gitlab.com/ee/install/docker/installation.html
+
+1- Create a new folder 
+
+```bash
+mkdir -p /data/gitlab
+```
+2- run de docker command to create a GitLab Server.
+
+```bash
+ sudo docker run --detach \
+   --hostname gitlabsrv \
+   --publish 443:443 --publish 8080:80 --publish 22:22 \
+   --name gitlab \
+   --restart always \
+   --volume /data/gitlab/config:/etc/gitlab \
+   --volume /data/gitlab/logs:/var/log/gitlab \
+   --volume /data/gitlab/data:/var/opt/gitlab \
+   --shm-size 256m \
+   gitlab/gitlab-ce:latest
+```
+
+To see the logs ?
+
+```bash
+sudo docker logs -f  a7d220861a1d
+```
+
+3- Configurer the GitLab local.
+
+To see the ip you use in url for your GitLab local.
+
+```bash
+ip a
+```
+
+http://192.168.15.49:8080/users/sign_in
+
+4- Configure user root.
+
+Run the command to get the password for the root user.
+
+
+```bash
+sudo docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
+```
+
+Obs. You needed to change your passowrd because you have a limit time for do this.
+
+5- Create a new user devops
+
+user: devops
+password: ********
+email: devops@example.com
+
+```bash
+git config --global user.email "devops@example.com"
+git config --global user.name "devops"
+```
+6- creaste a new repository 
+
+New repo repo_manager
+
+
+http://192.168.15.49:8080/devops/repo_manager.git
+
+Do the clone : 
+```bash
+git clone http://192.168.15.49:8080/devops/repo_manager.git
+```
+
+7- Create en configure the terraform files.
+
+In the case we need two file terraform.
+main.tf and var.tf
+
+main.tf 
+```yaml
+
+terraform {
+  required_providers {
+    gitlab = {
+      source  = "gitlabhq/gitlab"
+      version = "~> 3.5"
+    }
+  }
+}
+
+provider "gitlab" {
+  token = var.gitlab_token
+  base_url = "http://192.168.15.49:8080/api/v4/"
+}
+
+# # Add a project owned by the user
+resource "gitlab_project" "demo01" {
+  name = "demo01"
+  visibility_level = "public"
+}
+```
+
+var.tf
+```yaml
+
+variable gitlab_token {
+  type        = string
+  default     = "***********"
+  description = "Token terraform"
+}
+```
+8- Configure and create a token 
+
+Create a access token name Token terraform
+After that out this in default value in var,tf file
+
+
+9- Execute terraform commands
+```bash
+terraform int
+```
+```bash
+terraform plan
+```
+```bash
+terraform apply
+```
+
+
 "# kubernetes-gitlab-cicd" 
 
 Step 1
