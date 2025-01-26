@@ -103,6 +103,15 @@ resource "gitlab_project" "demo01" {
   name = "demo01"
   visibility_level = "public"
 }
+
+# Add branch protection for the project
+resource "gitlab_branch_protection" "main_protection" {
+  project             = gitlab_project.demo01.id
+  branch              = "main" # Adjust this to the name of your default branch
+  push_access_level   = "developer" # Adjust access level as needed
+  merge_access_level  = "developer" # Adjust access level as needed
+  unprotect_access_level = "maintainer" # Optional: who can unprotect this branch
+}
 ```
 
 var.tf
