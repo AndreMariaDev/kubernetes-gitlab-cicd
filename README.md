@@ -426,6 +426,10 @@ Click in `Commit changes`
 
 ![](image/artifacts-job03-logs.png)
 
+## Terraform with Pipeline Stages
+
+
+
 ##  "kubernetes-gitlab-cicd" 
 
 Step 1
