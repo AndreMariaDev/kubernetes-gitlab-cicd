@@ -228,6 +228,125 @@ clone_url = "http://192.168.15.49:8080"
 
 **Flow of the Steps**
 
+1- on a repository http://192.168.15.49:8080/devops/repo_manger go to left menu Build > Pipeline editor
+
+2- On a `"**Create a new .gitlab-ci.yml file at the root of the repository to get started.**"` click in `Configure pipeline`
+
+3- This will open a editor, put the script there:
+
+```yalm
+
+job01:
+    script:
+        - echo "Hello terraform Users"
+
+```
+
+4- Click in `Commit changes`
+
+![](image/job01.png)
+
+![](image/logs-job01.png)
+
+
+5- Now we'll create a new job. This job will create a folder and a file 
+
+
+```yalm
+
+job01:
+    script:
+        - echo "Hello terraform Users"
+
+job02:
+    script:
+        - mkdir test
+        - cd test
+        - touch teste01.txt
+        - echo line >> test01.txt
+```
+
+Click in `Commit changes`
+
+![](image/job02.png)
+
+![](image/logs-job03.png)
+
+
+6- Jobs runnedin stages
+
+```yalm
+
+stages:
+    - stage_one
+    - stage_two
+
+job01:
+    stage: stage_one
+    script:
+        - echo "Hello terraform Users"
+
+job02:
+    stage: stage_two
+    script:
+        - mkdir test
+        - cd test
+        - touch teste01.txt
+        - echo line >> test01.txt
+
+```
+
+Click in `Commit changes`
+
+![](image/runnung-pipeline.png)
+
+![](image/running-stages.png)
+
+![](image/stage-job01.png)
+
+![](image/pipeline-view.png)
+
+
+7- runnung two jobs in one stage
+
+```yalm
+
+stages:
+    - stage_one
+    - stage_two
+
+job01:
+    stage: stage_one
+    script:
+        - echo "Hello terraform Users"
+
+job02:
+    stage: stage_one
+    script:
+        - mkdir test
+        - cd test
+        - touch teste01.txt
+        - echo line >> test01.txt
+
+job03:
+    stage: stage_two
+    script:
+        - echo "Stage Two"
+
+```
+
+![](image/pipeline-view-3-stages.png)
+
+! Every time when job start it create a new container executed the script and detroy container.
+
+![](image/example-steps-in-job.png)
+
+what happend if stage_two needed a result from stage_one?
+
+Docker container are not persists the result 
+As a result the information are lost.
+
+How can we access the resolve?
 
 
 
