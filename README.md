@@ -428,6 +428,9 @@ Click in `Commit changes`
 
 ## Terraform with Pipeline Stages
 
+When we `"**Install GitLab Runner**"` we configure this using a image alpine.
+
+
 ```yaml
 variables:
   ADDRESS: "http://192.168.56.10:8080/api/v4/projects/2/terraform/state"
