@@ -169,6 +169,7 @@ Create Agent on GitLab
 
 Search in google: integrate kubernetes cluster with gitlab (https://docs.gitlab.com/ee/user/clusters/agent/) 
 To connect a Kubernetes cluster to GitLab, you must first install an agent in your cluster. (https://docs.gitlab.com/ee/user/clusters/agent/install/index.html)
+
 **Go to** : Create an agent configuration file
 
 * In the repository `"k8s-Connection"`, in the default branch, create an agent configuration file at: 
