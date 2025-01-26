@@ -430,6 +430,7 @@ Click in `Commit changes`
 
 When we `"**Install GitLab Runner**"` we configure this using a image alpine.
 
+![](image/)
 
 ```yaml
 variables:
