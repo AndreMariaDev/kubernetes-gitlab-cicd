@@ -1,4 +1,4 @@
-## Manage GitLab repositories with Terraform
+## Create and Configure GitLab Server 
 
 **Flow of the Steps**
 
@@ -64,9 +64,14 @@ email: devops@example.com
 git config --global user.email "devops@example.com"
 git config --global user.name "devops"
 ```
-6- creaste a new repository 
 
-New repo repo_manager
+## "Manage GitLab repositories with Terraform"
+
+**Flow of the Steps**
+
+1- creaste a new repository 
+
+New repository repo_manager
 
 
 http://192.168.15.49:8080/devops/repo_manager.git
@@ -76,7 +81,7 @@ Do the clone :
 git clone http://192.168.15.49:8080/devops/repo_manager.git
 ```
 
-7- Create en configure the terraform files.
+2- Create en configure the terraform files.
 
 In the case we need two file terraform.
 main.tf and var.tf
@@ -123,13 +128,13 @@ variable gitlab_token {
   description = "Token terraform"
 }
 ```
-8- Configure and create a token 
+3- Configure and create a token 
 
 Create a access token for user named terraform-token
 After that out this in default value in var,tf file
 
 
-9- Execute terraform commands
+4- Execute terraform commands
 ```bash
 terraform int
 ```
@@ -140,8 +145,72 @@ terraform plan
 terraform apply
 ```
 
+## Install GitLab Runner
 
-"# kubernetes-gitlab-cicd" 
+Here we need other pc to install Gitlab Runner.
+
+In my case I'll use Windows 11 to install Gitlab Runner.
+
+Click the link https://docs.gitlab.com/runner/install/windows.html
+
+1- Do the Download the binary for 64-bit
+
+2- Make a new folder in a root pc c:/GitLab-Runner
+
+3- Copy and paste the file .exe (gitlab-runner-windows-amd64)
+
+4- Rename the file to gitlab-runner
+
+5- Exec the pronpt with administrator 
+
+6- Exec the commnad :
+
+```bash
+cd C:\GitLab-Runner
+.\gitlab-runner.exe install
+.\gitlab-runner.exe start
+```
+
+## Configure and Registry GitLab Runner
+On pc that you install the Gitlab Server do then steps:
+
+1- On a repository http://192.168.15.49:8080/devops/repo_manger go to Settings > CICD > Runners
+
+2- In a section "Project runners" click in  `"**New project runner**"` 
+
+3- In a new window fill the fields ( `"**Tag**"` : dind ) select `"**Run untagged jobs**"`  and click in Create runner
+
+4- The new page will create a command:
+
+```bash
+
+gitlab-runner register  --url http://192.168.15.49:8080 --token glrt-t3_**********_**********
+
+```
+
+5- Go to the pc the you install Gitlab Runner e run the command in step (4)
+
+6- 
+
+
+7- Edit the file config add a line : 
+
+```config
+
+clone_url = "http://192.168.15.49:8080"
+
+```
+
+8- Save the file.
+
+## Create and Configure Basic Pipeline
+
+**Flow of the Steps**
+
+
+
+
+##  "kubernetes-gitlab-cicd" 
 
 Step 1
 
