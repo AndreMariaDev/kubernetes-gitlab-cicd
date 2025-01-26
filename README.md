@@ -428,6 +428,31 @@ Click in `Commit changes`
 
 ## Terraform with Pipeline Stages
 
+```yaml
+variables:
+  ADDRESS: "http://192.168.56.10:8080/api/v4/projects/2/terraform/state"
+  PROJECT_NAME: "demo01"
+  USER_NAME: "devops"
+  TOKEN: "glpat-ZRtYufgqEsxeByJlrxmh"
+
+image:
+    name: hashicorp/terraform
+
+init_step:
+  stage: init
+  script:
+    - terraform init \
+      -backend-config="$ADDRESS/$PROJECT_NAME" \
+      -backend-config="lock_address=$ADDRESS/$PROJECT_NAME/lock" \
+      -backend-config="unlock_address=$ADDRESS/$PROJECT_NAME/lock" \
+      -backend-config="username=$USER_NAME" \
+      -backend-config="password=$TOKEN" \
+      -backend-config="lock_method=POST" \
+      -backend-config="unlock_method=DELETE" \
+      -backend-config="retry_wait_min=5" \
+      --reconfigure
+
+```
 
 
 ##  "kubernetes-gitlab-cicd" 
