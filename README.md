@@ -116,7 +116,7 @@ variable gitlab_token {
 ```
 8- Configure and create a token 
 
-Create a access token name Token terraform
+Create a access token for user named terraform-token
 After that out this in default value in var,tf file
 
 
