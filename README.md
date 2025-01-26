@@ -389,8 +389,42 @@ Click in `Commit changes`
 
 ![](image/logs-failure-job03.png)
 
+```yalm
 
+stages:
+    - stage_one
+    - stage_two
 
+job01:
+    stage: stage_one
+    script:
+        - echo "Hello terraform Users"
+
+job02:
+    stage: stage_one
+    script:
+        - mkdir test
+        - cd test
+        - touch teste01.txt
+        - echo line >> test01.txt
+    artifacts:
+        paths:
+            - test
+
+job03:
+    stage: stage_two
+    script:
+        - cat test/teste01.txt
+
+```
+
+Click in `Commit changes`
+
+![](image/artifacts-pipeline-runner.png)
+
+![](image/artifacts-job02-logs.png)
+
+![](image/artifacts-job03-logs.png)
 
 ##  "kubernetes-gitlab-cicd" 
 
