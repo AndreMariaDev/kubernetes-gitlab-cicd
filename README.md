@@ -192,6 +192,27 @@ gitlab-runner register  --url http://192.168.15.49:8080 --token glrt-t3_********
 
 6- 
 
+```bash
+PS C:\GitLab-Runner> .\gitlab-runner.exe register
+Runtime platform                                    arch=amd64 os=windows pid=15468 revision=f9c5437e version=17.8.2
+Enter the GitLab instance URL (for example, https://gitlab.com/):
+http://192.168.15.49:8080
+Enter the registration token:
+glrt-t3_**********_**********
+Verifying runner... is valid                        runner=t3_******
+Enter a name for the runner. This is stored only in the local config.toml file:
+[pc-andre]: runner-tutorial-youtube
+Enter an executor: kubernetes, docker-autoscaler, instance, custom, shell, ssh, docker, docker-windows, parallels, virtualbox, docker+machine:
+docker
+Enter the default Docker image (for example, ruby:2.7):
+alpine
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+
+Configuration (with the authentication token) was saved in "C:\\GitLab-Runner\\config.toml"
+PS C:\GitLab-Runner> .\gitlab-runner.exe restart
+Runtime platform                                    arch=amd64 os=windows pid=11176 revision=f9c5437e version=17.8.2
+```
+
 
 7- Edit the file config add a line : 
 
