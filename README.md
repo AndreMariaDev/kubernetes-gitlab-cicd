@@ -131,7 +131,11 @@ variable gitlab_token {
 3- Configure and create a token 
 
 Create a access token for user named terraform-token
-After that out this in default value in var,tf file
+
+![](image/create-access-token.png)
+
+
+After that out this in default value in var.tf file
 
 
 4- Execute terraform commands
@@ -428,16 +432,74 @@ Click in `Commit changes`
 
 ## Terraform with Pipeline Stages
 
-When we `"**Install GitLab Runner**"` we configure this using a image alpine.
+When we `"**Install GitLab Runner**"` we configure GitLab Runner using a image alpine.
+
+
+```bash
+PS C:\GitLab-Runner> .\gitlab-runner.exe register
+Runtime platform                                    arch=amd64 os=windows pid=15468 revision=f9c5437e version=17.8.2
+Enter the GitLab instance URL (for example, https://gitlab.com/):
+http://192.168.15.49:8080
+Enter the registration token:
+glrt-t3_**********_**********
+Verifying runner... is valid                        runner=t3_******
+Enter a name for the runner. This is stored only in the local config.toml file:
+[pc-andre]: runner-tutorial-youtube
+Enter an executor: kubernetes, docker-autoscaler, instance, custom, shell, ssh, docker, docker-windows, parallels, virtualbox, docker+machine:
+docker
+Enter the default Docker image (for example, ruby:2.7):
+alpine
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+
+Configuration (with the authentication token) was saved in "C:\\GitLab-Runner\\config.toml"
+PS C:\GitLab-Runner> .\gitlab-runner.exe restart
+Runtime platform                                    arch=amd64 os=windows pid=11176 revision=f9c5437e version=17.8.2
+```
 
 ![](image/typeImageGitlabRunner.png)
 
+Now let's implement some changes on a pipeline file .gitlab-ci.yml 
+
+
+
 ```yaml
+
+# stages:
+#     - stage_one
+#     - stage_two
+
+# job01:
+#     stage: stage_one
+#     script:
+#         - echo "Hello terraform Users"
+
+# job02:
+#     stage: stage_one
+#     script:
+#         - mkdir test
+#         - cd test
+#         - touch teste01.txt
+#         - echo line >> test01.txt
+#     artifacts:
+#         paths:
+#             - test
+
+# job03:
+#     stage: stage_two
+#     script:
+#         - cat test/teste01.txt
+
+
+stages:
+    - init
+    - plan
+    - apply
+
 variables:
   ADDRESS: "http://192.168.56.10:8080/api/v4/projects/2/terraform/state"
-  PROJECT_NAME: "demo01"
+  PROJECT_NAME: "demo02"
   USER_NAME: "devops"
-  TOKEN: "glpat-ZRtYufgqEsxeByJlrxmh"
+  TOKEN: "glpat-"
 
 image:
     name: hashicorp/terraform
@@ -456,7 +518,121 @@ init_step:
       -backend-config="retry_wait_min=5" \
       --reconfigure
 
+init_job:
+    stage: init
+    script:
+        - terraform init
+
+plan_job:
+    stage: plan
+    script:
+        - terraform plan
+
+apply_job:
+    stage: apply
+    script:
+        - terraform apply
+
 ```
+
+Click in `Commit changes`
+
+The step init_job Failed, why?
+
+![](image/terraform-sh-command.png)
+
+`"**Terraform has no command named "sh".**"`
+
+to solve this problema we neeed to add the `"**entrypoint[""]**"`
+
+The entrypoint is used to specify the command executed them the container is started
+
+Go to add entrypoint[""] in the pipeline file .gitlab-ci.yml 
+
+```yaml
+
+# stages:
+#     - stage_one
+#     - stage_two
+
+# job01:
+#     stage: stage_one
+#     script:
+#         - echo "Hello terraform Users"
+
+# job02:
+#     stage: stage_one
+#     script:
+#         - mkdir test
+#         - cd test
+#         - touch teste01.txt
+#         - echo line >> test01.txt
+#     artifacts:
+#         paths:
+#             - test
+
+# job03:
+#     stage: stage_two
+#     script:
+#         - cat test/teste01.txt
+
+
+stages:
+    - init
+    - plan
+    - apply
+
+variables:
+  ADDRESS: "http://192.168.56.10:8080/api/v4/projects/2/terraform/state"
+  PROJECT_NAME: "demo02"
+  USER_NAME: "devops"
+  TOKEN: "glpat-"
+
+image:
+    name: hashicorp/terraform
+    entrypoint: [""]
+
+init_step:
+  stage: init
+  script:
+    - terraform init \
+      -backend-config="$ADDRESS/$PROJECT_NAME" \
+      -backend-config="lock_address=$ADDRESS/$PROJECT_NAME/lock" \
+      -backend-config="unlock_address=$ADDRESS/$PROJECT_NAME/lock" \
+      -backend-config="username=$USER_NAME" \
+      -backend-config="password=$TOKEN" \
+      -backend-config="lock_method=POST" \
+      -backend-config="unlock_method=DELETE" \
+      -backend-config="retry_wait_min=5" \
+      --reconfigure
+
+init_job:
+    stage: init
+    script:
+        - terraform init
+
+plan_job:
+    stage: plan
+    script:
+        - terraform plan
+
+apply_job:
+    stage: apply
+    script:
+        - terraform apply
+
+```
+
+![](image/add-entrypoint.png)
+
+![](image/add-entrypoint-error-plan_job.png)
+
+This error ocorrer because docker container going and no have result transfer to the second one.
+
+Link in a case of `"**artifacts**"`, but here every step needed the init step!
+
+But to solve this problemas we'll change the file .gitlab-ci.yml 
+
 
 
 ##  "kubernetes-gitlab-cicd" 
