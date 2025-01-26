@@ -344,9 +344,51 @@ job03:
 what happend if stage_two needed a result from stage_one?
 
 Docker container are not persists the result 
+
 As a result the information are lost.
 
 How can we access the resolve?
+
+`"**Artifacts are files that are produced by a step. Once you've defined them in your pipeline configuration, you can share them with a following step or export them to keep the artifacts after a step completes.**"`
+
+8- Show the content teste01.txt file in stage_two
+
+Befoe we implement te artifact we'll do a test
+
+```yalm
+
+stages:
+    - stage_one
+    - stage_two
+
+job01:
+    stage: stage_one
+    script:
+        - echo "Hello terraform Users"
+
+job02:
+    stage: stage_one
+    script:
+        - mkdir test
+        - cd test
+        - touch teste01.txt
+        - echo line >> test01.txt
+
+job03:
+    stage: stage_two
+    script:
+        - cat test/teste01.txt
+
+```
+
+Put the code in pipeline editor 
+
+Click in `Commit changes`
+
+![](image/failure-job03.png)
+
+![](image/logs-failure-job03.png)
+
 
 
 
