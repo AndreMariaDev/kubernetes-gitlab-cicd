@@ -634,6 +634,60 @@ Link in a case of `"**artifacts**"`, but here every step needed the init step!
 But to solve this problemas we'll change the file .gitlab-ci.yml 
 
 
+```yaml
+stages:
+    - validate
+    - plan
+    - apply
+    - destroy
+
+variables:
+  ADDRESS: "http://192.168.56.10:8080/api/v4/projects/2/terraform/state"
+  PROJECT_NAME: "demo02"
+  USER_NAME: "devops"
+  TOKEN: "glpat-*****************_"
+
+image:
+    name: hashicorp/terraform
+    entrypoint: [""]
+
+before_script:
+    - terraform init -upgrade \-backend-config="$ADDRESS/$PROJECT_NAME" -backend-config="lock_address=$ADDRESS/$PROJECT_NAME/lock" -backend-config="unlock_address=$ADDRESS/$PROJECT_NAME/lock" -backend-config="username=$USER_NAME" -backend-config="password=$TOKEN" -backend-config="lock_method=POST" -backend-config="unlock_method=DELETE" -backend-config="retry_wait_min=5" --reconfigure
+
+
+init_step:
+  stage: validate
+  script:
+      - terraform validate
+
+plan_job:
+    stage: plan
+    script:
+        - terraform plan
+
+apply_job:
+    stage: apply
+    script:
+        - TF_LOG=DEBUG terraform apply -auto-approve
+    when:
+        manual
+
+destroy_job:
+    stage: destroy
+    script:
+        - terraform destroy -auto-approve
+    when:
+        manual
+```
+
+Here I putt together the step destroy_job and the `"**when**"` condition
+
+Use when to configure the conditions for when jobs run. If not defined in a job, the default value is when: on_success. 
+
+All syntax still in the link below:
+
+https://docs.gitlab.com/ee/ci/yaml/
+
 
 ##  "kubernetes-gitlab-cicd" 
 
